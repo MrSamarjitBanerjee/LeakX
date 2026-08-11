@@ -444,4 +444,4 @@ See the [LICENSE](LICENSE) file for details.
 
 ### Built with
 
-**TypeScript · Node.js · npm**
+**TypeScript · Node.js · npm** By Samarjit Banerjee
