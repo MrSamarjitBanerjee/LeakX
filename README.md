@@ -1,8 +1,22 @@
 # LeakX
 
+
+## LeakX in Action
+
+<p align="center">
+  <img
+    src="./assets/leakx-demo.gif"
+    alt="LeakX scanning a codebase for hardcoded secrets"
+    width="800"
+  />
+</p
+
+
 ### Lightweight CLI Secret Scanner for Developers
 
 LeakX is a fast, lightweight command-line security tool that scans your codebase for **hardcoded secrets** such as API keys, access tokens, and passwords before they accidentally make their way into Git repositories or CI/CD pipelines.
+
+
 
 
 ---
