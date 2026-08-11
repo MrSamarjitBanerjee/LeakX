@@ -1,7 +1,7 @@
 
 <p align="center">
   <img
-    src="./assets/leakx-demo.gif"
+    src="https://chatgpt.com/backend-api/estuary/content?id=file_0000000059288211baeb7a24414472f1&ts=496229&p=fs&cid=1&sig=1eb8b7666621afdb86b5c7fbcb9bb569fb0587a08d6456048a26cce9b0940ef9&v=0"
     alt="LeakX scanning a codebase for hardcoded secrets"
     width="800"
   />
