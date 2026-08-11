@@ -50,13 +50,7 @@ Building LeakX helped me strengthen my understanding of building and publishing 
 * Publishing and versioning packages on npm
 * Using `npx` to run published CLI tools
 
-### Testing
-
-* Writing automated tests for scanner behavior
-* Testing secret detection patterns
-* Testing files with and without secrets
-* Verifying scanner results and exit codes
-
+  
 ### Git & GitHub
 
 * Structuring a production-ready repository
