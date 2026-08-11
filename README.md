@@ -2,6 +2,10 @@
 
 # LeakX
 
+<img width="900" height="300" alt="leakx-small-scan-typing" src="https://github.com/user-attachments/assets/6e5bc3df-d25a-4b51-bb61-f4a3542011d1" />
+
+
+
 
 
 ### Lightweight CLI Secret Scanner for Developers
