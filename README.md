@@ -1,7 +1,3 @@
-# LeakX
-
-
-## LeakX in Action
 
 <p align="center">
   <img
@@ -10,6 +6,9 @@
     width="800"
   />
 </p
+
+# LeakX
+
 
 
 ### Lightweight CLI Secret Scanner for Developers
