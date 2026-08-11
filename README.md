@@ -1,6 +1,73 @@
 # LeakX
 
-**LeakX** is a lightweight command-line security tool that scans your codebase for hardcoded secrets such as API keys, tokens, and passwords before they accidentally end up in version control.
+### Lightweight CLI Secret Scanner for Developers
+
+LeakX is a fast, lightweight command-line security tool that scans your codebase for **hardcoded secrets** such as API keys, access tokens, and passwords before they accidentally make their way into Git repositories or CI/CD pipelines.
+
+
+---
+
+## What I Learned
+
+Building LeakX helped me strengthen my understanding of building and publishing a real-world Node.js CLI package.
+
+### TypeScript
+
+* Structuring a TypeScript project for production
+* Using interfaces and types for scanner results and detector logic
+* Organizing code into reusable modules
+* Compiling TypeScript for npm distribution
+
+### Node.js CLI Development
+
+* Building command-line interfaces with Node.js
+* Working with command-line arguments
+* Reading and processing files from the filesystem
+* Handling paths, directories, and glob patterns
+* Managing errors and unreadable files gracefully
+
+### Secret Detection
+
+* Designing regex-based detection patterns
+* Detecting different types of credentials
+* Handling false positives and false negatives
+* Masking sensitive values before displaying them
+* Designing extensible detector modules
+
+### File Scanning
+
+* Recursive file discovery
+* `.gitignore`-aware scanning
+* Filtering unnecessary directories
+* Scanning multiple files efficiently
+
+### npm Package Development
+
+* Configuring `package.json` for a CLI package
+* Creating and exposing a CLI binary
+* Building and testing an npm package locally
+* Using `npm pack --dry-run` to inspect package contents
+* Publishing and versioning packages on npm
+* Using `npx` to run published CLI tools
+
+### Testing
+
+* Writing automated tests for scanner behavior
+* Testing secret detection patterns
+* Testing files with and without secrets
+* Verifying scanner results and exit codes
+
+### Git & GitHub
+
+* Structuring a production-ready repository
+* Using `.gitignore` to prevent sensitive files from being committed
+* Managing Git branches, commits, and remote repositories
+* Publishing an open-source project on GitHub
+  
+---
+
+
+
 
 ```text
 🔍 LeakX — scanning for secrets...
@@ -18,40 +85,72 @@ Scan Summary
 
 ## Why LeakX?
 
-Hardcoded secrets are one of the most common and preventable security mistakes in software projects.
+Hardcoded credentials are a common security mistake in software development.
 
-LeakX provides a fast, zero-configuration way to detect potentially exposed secrets locally, before they reach Git, GitHub, or a CI/CD pipeline.
+A developer might accidentally write:
+
+```javascript
+const apiKey = "your-api-key";
+```
+
+and commit it to Git.
+
+LeakX provides a simple local security layer that helps detect potentially exposed credentials **before they reach version control**.
+
+---
 
 ## Features
 
-- 🔎 Scan a single file, directory, or multiple paths
-- 🌐 Support for glob patterns
-- 🚫 Automatically ignores `node_modules`, `.git`, `dist`, and `build`
-- 📄 Respects your project's `.gitignore`
-- 🔐 Detects common secret patterns including GitHub tokens, AWS access keys, OpenAI API keys, generic API keys, and hardcoded passwords
-- 🎭 Masks detected secrets in scan output
-- 🛡️ Gracefully handles unreadable files by skipping them with a warning
-- ⚡ Fast and dependency-light
-- 🔧 Simple CLI interface with no configuration required
+* 🔎 Scan files, directories, or multiple paths
+* 🌐 Glob pattern support
+* 🔐 Detect common API keys, tokens, and passwords
+* 🎭 Mask detected secrets in terminal output
+* 📄 Respect `.gitignore`
+* 🚫 Automatically ignore common directories such as `node_modules`, `.git`, `dist`, and `build`
+* ⚡ Fast and dependency-light
+* 🛡️ Gracefully handle unreadable files
+* 🚦 CI-friendly exit codes
+* 🔧 Zero configuration required
 
-## Requirements
+---
 
-- Node.js 18 or higher
-- npm 9 or higher
+## Supported Secret Types
+
+| Secret Type        | Example                                    |
+| ------------------ | ------------------------------------------ |
+| GitHub Token       | `ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
+| AWS Access Key     | `AKIAIOSFODNN7EXAMPLE`                     |
+| OpenAI API Key     | `sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`   |
+| Generic API Key    | `apiKey = "xxxxxxxxxxxxxxxxxxxxxx"`        |
+| Hardcoded Password | `password = "example-password"`            |
+
+LeakX currently uses **regex-based detection**, making the detection logic predictable and easy to extend.
+
+---
 
 ## Installation
 
-Install LeakX globally with npm:
+### Install globally
 
 ```bash
 npm install -g leakx
 ```
 
-Then use the `leakx` command from any project:
+Then run:
 
 ```bash
 leakx scan .
 ```
+
+### Use with npx
+
+No global installation is required:
+
+```bash
+npx leakx scan .
+```
+
+---
 
 ## Usage
 
@@ -79,56 +178,72 @@ leakx scan app.ts
 leakx scan ./frontend ./backend
 ```
 
-### Scan using a glob pattern
+### Scan with a glob pattern
 
 ```bash
 leakx scan "./src/**/*.ts"
 ```
 
-## Run with npx
+---
 
-You can also run LeakX without installing it globally:
+## Example
 
-```bash
-npx leakx scan .
+Suppose your project contains:
+
+```javascript
+const githubToken = "ghp_xxxxxxxxxxxxxxxxxxxxxxxxx";
 ```
 
-For example:
+Running:
 
 ```bash
-npx leakx scan ./src
+leakx scan .
 ```
 
-No global installation is required when using `npx`.
+will report the potential secret without exposing the complete value:
 
-## What LeakX Detects
+```text
+✖ GitHub Token
+  File: src/config.js
+  Line: 12
+  Secret: ghp_...8B4a
+```
 
-| Secret Type        | Example                                    |
-| ------------------ | ------------------------------------------ |
-| GitHub Token       | `ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
-| AWS Access Key     | `AKIAIOSFODNN7EXAMPLE`                     |
-| OpenAI API Key     | `sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`   |
-| Generic API Key    | `apiKey = "xxxxxxxxxxxxxxxxxxxxxx"`        |
-| Hardcoded Password | `password = "example-password"`            |
+LeakX then provides a summary:
 
-Detection is currently **regex-based**, making it simple, predictable, and easy to extend with additional patterns.
+```text
+Scan Summary
+  Files Scanned : 42
+  Secrets Found : 1
+  Scan Duration : 0.08s
+```
 
-## Supported Files
+---
 
-LeakX can scan common source-code and configuration files, including:
+## Exit Codes
 
-- JavaScript / TypeScript
-- Python
-- Java
-- C / C++
-- JSON
-- YAML / YML
-- Environment and configuration files
-- Other text-based source files
+LeakX is designed to work with automated workflows.
 
-## Ignored Paths
+| Exit Code | Meaning                                |
+| --------- | -------------------------------------- |
+| `0`       | No potential secrets detected          |
+| `1`       | One or more potential secrets detected |
 
-LeakX automatically skips common generated or dependency directories:
+This makes it possible to use LeakX in **CI/CD pipelines, scripts, and Git hooks**.
+
+Example:
+
+```bash
+leakx scan .
+```
+
+A detected secret can cause the command to return exit code `1`, allowing a CI pipeline to stop the build.
+
+---
+
+## Ignored Files and Directories
+
+LeakX automatically ignores common generated and dependency directories:
 
 ```text
 node_modules/
@@ -137,48 +252,192 @@ dist/
 build/
 ```
 
-It also respects entries defined in your project's `.gitignore`.
+It also respects your project's `.gitignore`.
 
-## Exit Codes
+For example:
 
-LeakX uses exit codes to make integration with scripts and CI/CD pipelines simple.
-
-| Exit Code | Meaning                                |
-| --------- | -------------------------------------- |
-| `0`       | No secrets detected                    |
-| `1`       | One or more potential secrets detected |
-
-Example:
-
-```bash
-leakx scan .
+```gitignore
+.env
+node_modules/
+dist/
 ```
 
-If a potential secret is detected, LeakX exits with code `1`.
+LeakX will avoid scanning files excluded by these rules.
 
-## CI / Pre-Commit Usage
-
-Because LeakX returns a non-zero exit code when potential secrets are detected, it can be integrated into CI pipelines or Git hooks.
-
-Example:
-
-```bash
-leakx scan .
-```
-
-This allows your pipeline to fail when potential hardcoded secrets are found.
+---
 
 ## How It Works
 
-LeakX:
+LeakX follows a simple scanning pipeline:
 
-1. Reads the specified files and directories.
-2. Applies built-in regular-expression patterns.
-3. Identifies potential hardcoded secrets.
-4. Masks detected values in the terminal output.
-5. Displays a scan summary.
-6. Returns an appropriate exit code.
+```text
+Input Paths
+     ↓
+File Discovery
+     ↓
+.gitignore Filtering
+     ↓
+Secret Detection
+     ↓
+Secret Masking
+     ↓
+Scan Results
+     ↓
+Exit Code
+```
+
+The scanner discovers files, filters ignored paths, checks supported secret patterns, masks detected values, and reports the results.
+
+---
+
+## Project Structure
+
+```text
+LeakX/
+├── src/
+│   ├── cli.ts
+│   ├── scanner.ts
+│   │
+│   ├── detectors/
+│   │   ├── awsKey.ts
+│   │   ├── genericApiKey.ts
+│   │   ├── githubToken.ts
+│   │   ├── openaiKey.ts
+│   │   ├── password.ts
+│   │   └── index.ts
+│   │
+│   ├── types/
+│   │   └── index.ts
+│   │
+│   └── utils/
+│       ├── fileDiscovery.ts
+│       └── mask.ts
+│
+├── tests/
+│   └── scanner.test.ts
+│
+├── package.json
+├── package-lock.json
+├── tsconfig.json
+├── README.md
+└── LICENSE
+```
+
+---
+
+## Development
+
+Clone the repository:
+
+```bash
+git clone https://github.com/MrSamarjitBanerjee/LeakX.git
+```
+
+Navigate into the project:
+
+```bash
+cd LeakX
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the project in development:
+
+```bash
+npm run dev
+```
+
+Build the project:
+
+```bash
+npm run build
+```
+
+Run tests:
+
+```bash
+npm test
+```
+
+---
+
+## Limitations
+
+LeakX is a **pattern-based secret scanner**.
+
+Because it relies on regular expressions, it can produce:
+
+* **False positives** — values that look like secrets but are not.
+* **False negatives** — secrets that do not match the currently supported patterns.
+
+LeakX should therefore be treated as a lightweight security layer, not a replacement for proper secret-management systems.
+
+For production applications, use LeakX alongside:
+
+* Environment variables
+* Secret managers
+* Git repository security controls
+* Credential rotation
+* CI/CD security checks
+
+---
+
+## Security Best Practice
+
+If LeakX detects a real credential that has already been committed:
+
+**Do not rely only on deleting the file or line.**
+
+Immediately:
+
+1. Revoke the exposed credential.
+2. Generate a new credential.
+3. Remove the secret from the repository history if necessary.
+4. Check whether the credential was accessed or misused.
+
+---
+
+## Contributing
+
+Contributions and improvements are welcome.
+
+To contribute:
+
+```bash
+git clone https://github.com/MrSamarjitBanerjee/LeakX.git
+cd LeakX
+npm install
+```
+
+Create a new branch:
+
+```bash
+git checkout -b feature/your-feature
+```
+
+Make your changes, add tests where appropriate, and submit a pull request.
+
+---
 
 ## License
 
-MIT
+MIT License.
+
+See the [LICENSE](LICENSE) file for details.
+
+---
+
+## Links
+
+* **npm:** https://www.npmjs.com/package/leakx
+* **GitHub:** https://github.com/MrSamarjitBanerjee/LeakX
+
+---
+
+### Built with
+
+**TypeScript · Node.js · npm**
